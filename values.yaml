@@ -1,0 +1,8 @@
+controller:
+  resources:
+    requests:
+      memory: "64Mi"    # Adjust as necessary
+      cpu: "100m"        # Adjust as necessary
+    limits:
+      memory: "128Mi"    # Adjust as necessary
+      cpu: "200m"        # Adjust as necessary
