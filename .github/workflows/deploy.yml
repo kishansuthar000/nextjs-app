@@ -50,8 +50,9 @@ jobs:
         with:
           version: 'latest'
 
-      - name: Configure kubectl
+      - name: Create .kube directory and configure kubectl
         run: |
+          mkdir -p $HOME/.kube
           echo "${{ env.KUBE_CONFIG_DATA }}" | base64 --decode > $HOME/.kube/config
 
       - name: Create namespaces if not exist
@@ -63,6 +64,10 @@ jobs:
       - name: Apply Kubernetes deployment
         run: |
           kubectl apply -f k8s/deployment.yml -n ${{ github.ref_name }}
+
+      - name: Apply Kubernetes service
+        run: |
+          kubectl apply -f k8s/service.yaml -n ${{ github.ref_name }}
 
       - name: Apply Ingress configuration
         run: |
