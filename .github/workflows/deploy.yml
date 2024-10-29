@@ -63,15 +63,15 @@ jobs:
 
       - name: Apply Kubernetes deployment
         run: |
-          kubectl apply -f k8s/deployment.yaml -n ${{ github.ref_name }}
+          kubectl apply -f k8/deployment.yaml -n ${{ github.ref_name }}
 
       - name: Apply Kubernetes service
         run: |
-          kubectl apply -f k8s/service.yaml -n ${{ github.ref_name }}
+          kubectl apply -f k8/service.yaml -n ${{ github.ref_name }}
 
       - name: Apply Ingress configuration
         run: |
-          kubectl apply -f k8s/ingress.yaml
+          kubectl apply -f k8/ingress.yaml
 
       - name: Update Kubernetes deployment image
         run: |
