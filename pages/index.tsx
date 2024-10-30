@@ -25,7 +25,7 @@ export default function Home() {
       <div
         className={`${styles.page} ${geistSans.variable} ${geistMono.variable}`}
       >
-       <h1>This is UAT : 02:00 PM</h1>
+       <h1>This is UAT</h1>
       </div>
     </>
   );
