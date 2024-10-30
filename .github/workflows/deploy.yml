@@ -78,5 +78,5 @@ jobs:
           kubectl apply -f k8/deployment.yaml -n uat
           kubectl apply -f k8/service.yaml -n uat
           kubectl apply -f k8/ingress.yaml -n uat
-          kubectl rollout restart deployment ksa-fems -n uat 
+          kubectl rollout restart deployment nextjs-app -n uat 
      
