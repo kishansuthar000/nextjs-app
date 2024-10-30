@@ -25,11 +25,7 @@ export default function Home() {
       <div
         className={`${styles.page} ${geistSans.variable} ${geistMono.variable}`}
       >
-<<<<<<< HEAD
-          <h1>This is dev</h1>
-=======
-         <h1>This is QA-11:19</h1>
->>>>>>> f936c8fe0921019f5c66a70834078462bab563fe
+          <h1>This is qa:12:16</h1>
       </div>
     </>
   );
