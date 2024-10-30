@@ -73,12 +73,12 @@ jobs:
 
       - name: Apply Kubernetes deployment
         run: |
-          kubectl set image deployment/nextjs-app nextjs-app=gcr.io/${{ env.PROJECT_ID }}/nextjs-app:uat -n uat
+          kubectl apply -f k8/deployment.yaml -n uat
 
       - name: Apply Kubernetes service
         run: |
-          kubectl apply -f k8/service.yaml -n ${{ github.ref_name }}
+          kubectl apply -f k8/service.yaml -n uat
 
       - name: Apply Ingress configuration
         run: |
-          kubectl apply -f k8/ingress.yaml
+          kubectl apply -f k8/ingress.yaml -n uat
