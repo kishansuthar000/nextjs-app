@@ -2,7 +2,7 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: nextjs-app
-  namespace: uat
+  namespace: qa
   annotations:
     kubernetes.io/ingress.global-static-ip-name: "my-static-ip"
     nginx.ingress.kubernetes.io/rewrite-target: /$2
