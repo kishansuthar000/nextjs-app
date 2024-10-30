@@ -85,4 +85,4 @@ jobs:
 
       - name: Update Kubernetes deployment image
         run: |
-          kubectl set image deployment/gcc gcc=gcr.io/${{ env.PROJECT_ID }}/gcc:${{ github.sha }} -n ${{ github.ref_name }}
+          kubectl set image deployment/nextjs-app nextjs-app=nextjs-app/${{ env.PROJECT_ID }}/nextjs-app:${{ github.sha }} -n ${{ github.ref_name }}
