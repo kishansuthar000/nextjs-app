@@ -43,7 +43,7 @@ jobs:
 
       - name: Install gke-gcloud-auth-plugin
         run: |
-          gcloud components install gke-gcloud-auth-plugin
+          sudo apt-get install google-cloud-cli-gke-gcloud-auth-plugin
           echo 'export USE_GKE_GCLOUD_AUTH_PLUGIN=True' >> $HOME/.bashrc
           source $HOME/.bashrc
 
