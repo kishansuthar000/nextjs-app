@@ -9,8 +9,7 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-    - host: ""
-      http:
+    - http:
         paths:
           - path: /dev(/|$)(.*)
             pathType: ImplementationSpecific
