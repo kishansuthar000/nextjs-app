@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: nextjs-app
-        image: gcr.io/gfsa-438010/nextjs-app:6d300ec
+        image: gcr.io/gfsa-438010/nextjs-app:latest
         imagePullPolicy: Always
         ports:
         - containerPort: 3000
