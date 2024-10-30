@@ -2,7 +2,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: nextjs-app
-  namespace: dev
+  namespace: qa
 spec:
   type: LoadBalancer
   selector:
