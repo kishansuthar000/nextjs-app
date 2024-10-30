@@ -1,4 +1,4 @@
-name: CI/CD Pipeline
+name: nextjs-app deploy
 
 on:
   push:
@@ -30,61 +30,53 @@ jobs:
       - name: Build project
         run: npm run build
 
-      - name: Authenticate to GCP
-        uses: google-github-actions/auth@v1
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+
+      - name: Log in to Google Cloud
+        uses: google-github-actions/auth@v0
         with:
           credentials_json: ${{ secrets.GCP_SA_KEY }}
 
-      - name: Configure Docker to use gcloud as a credential helper
+      - name: Configure Docker
         run: gcloud auth configure-docker
 
-      - name: Build Docker image for Dev
-        if: github.ref == 'refs/heads/dev'
+      - name: Add Google Cloud SDK repository and install gke-gcloud-auth-plugin
         run: |
-          docker build --no-cache -t gcr.io/${{ secrets.GCP_PROJECT_ID }}/nextjs-app:dev .
-          docker push gcr.io/${{ secrets.GCP_PROJECT_ID }}/nextjs-app:dev
+          echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] http://packages.cloud.google.com/apt cloud-sdk main" | sudo tee -a /etc/apt/sources.list.d/google-cloud-sdk.list
+          sudo apt-get install -y apt-transport-https ca-certificates gnupg
+          curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key --keyring /usr/share/keyrings/cloud.google.gpg add -
+          sudo apt-get update
+          sudo apt-get install -y google-cloud-sdk-gke-gcloud-auth-plugin
+          echo 'export USE_GKE_GCLOUD_AUTH_PLUGIN=True' >> $HOME/.bashrc
+          source $HOME/.bashrc
 
-      - name: Build Docker image for UAT
-        if: github.ref == 'refs/heads/uat'
+      - name: Build and push Docker image
         run: |
-          docker build -t gcr.io/${{ secrets.GCP_PROJECT_ID }}/nextjs-app:uat .
-          docker push gcr.io/${{ secrets.GCP_PROJECT_ID }}/nextjs-app:uat
+          docker buildx build --platform linux/amd64 --push -t gcr.io/${{ env.PROJECT_ID }}/nextjs-app:dev .
 
-      - name: Build Docker image for QA
-        if: github.ref == 'refs/heads/qa'
-        run: |
-          docker build -t gcr.io/${{ secrets.GCP_PROJECT_ID }}/nextjs-app:qa .
-          docker push gcr.io/${{ secrets.GCP_PROJECT_ID }}/nextjs-app:qa
-
-      - name: Set up GKE & Install gke-gcloud-auth-plugin
-        uses: google-github-actions/setup-gcloud@v1
+      - name: Set up kubectl
+        uses: azure/setup-kubectl@v1
         with:
-          project_id: ${{ secrets.GCP_PROJECT_ID }}
-          service_account_key: ${{ secrets.GCP_SA_KEY }}
-          export_default_credentials: true
-          install_components: gke-gcloud-auth-plugin
+          version: 'latest'
 
-      - name: Configure kubectl
+      - name: Create .kube directory and configure kubectl
         run: |
-          gcloud container clusters get-credentials ${{ secrets.GKE_CLUSTER }} --zone ${{ secrets.GKE_ZONE }}
+          mkdir -p $HOME/.kube
+          echo "${{ env.KUBE_CONFIG_DATA }}" | base64 --decode > $HOME/.kube/config
 
-      - name: Deploy to Dev
-        if: github.ref == 'refs/heads/dev'
+      - name: Create namespaces if not exist
         run: |
-          kubectl apply -f k8/deployment.yaml
-          kubectl apply -f k8/service.yaml
-          kubectl apply -f k8/ingress.yaml
-
-      - name: Deploy to UAT
-        if: github.ref == 'refs/heads/uat'
-        run: |
-          kubectl apply -f k8/deployment.yaml
-          kubectl apply -f k8/service.yaml
-          kubectl apply -f k8/ingress.yaml
-
-      - name: Deploy to QA
-        if: github.ref == 'refs/heads/qa'
-        run: |
-          kubectl apply -f k8/deployment.yaml
-          kubectl apply -f k8/service.yaml
-          kubectl apply -f k8/ingress.yaml
+          kubectl create namespace dev || true
+          kubectl create namespace uat || true
+          kubectl create namespace qa || true
+    
+      - name: Delete Previous ingress
+        run: |       
+          kubectl delete ingress --all -n dev
+          kubectl delete all --all -n dev
+          kubectl apply -f k8/deployment.yaml -n dev
+          kubectl apply -f k8/service.yaml -n dev
+          kubectl apply -f k8/ingress.yaml -n dev
+          kubectl rollout restart deployment nextjs-app -n dev 
+     
