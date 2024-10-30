@@ -53,7 +53,6 @@ jobs:
 
       - name: Build and push Docker image
         run: |
-          IMAGE_TAG=$(echo $GITHUB_SHA | cut -c1-7)
           docker buildx build --platform linux/amd64 --push -t gcr.io/${{ env.PROJECT_ID }}/nextjs-app:uat .
 
       - name: Set up kubectl
@@ -74,7 +73,6 @@ jobs:
 
       - name: Apply Kubernetes deployment
         run: |
-          IMAGE_TAG=$(echo $GITHUB_SHA | cut -c1-7)
           kubectl set image deployment/nextjs-app nextjs-app=gcr.io/${{ env.PROJECT_ID }}/nextjs-app:uat -n uat
 
       - name: Apply Kubernetes service
