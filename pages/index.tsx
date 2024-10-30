@@ -25,7 +25,7 @@ export default function Home() {
       <div
         className={`${styles.page} ${geistSans.variable} ${geistMono.variable}`}
       >
-         <h1>This is QA</h1>
+         <h1>This is QA-ENV</h1>
       </div>
     </>
   );
