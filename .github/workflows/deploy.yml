@@ -41,6 +41,12 @@ jobs:
       - name: Configure Docker
         run: gcloud auth configure-docker
 
+      - name: Install gke-gcloud-auth-plugin
+        run: |
+          gcloud components install gke-gcloud-auth-plugin
+          echo 'export USE_GKE_GCLOUD_AUTH_PLUGIN=True' >> $HOME/.bashrc
+          source $HOME/.bashrc
+
       - name: Build and push Docker image
         run: |
           docker buildx build --platform linux/amd64 --push -t gcr.io/${{ env.PROJECT_ID }}/gcc:${{ github.sha }} .
