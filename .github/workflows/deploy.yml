@@ -41,6 +41,19 @@ jobs:
       - name: Configure Docker
         run: gcloud auth configure-docker
 
+<<<<<<< HEAD
+=======
+      - name: Add Google Cloud SDK repository and install gke-gcloud-auth-plugin
+        run: |
+          echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] http://packages.cloud.google.com/apt cloud-sdk main" | sudo tee -a /etc/apt/sources.list.d/google-cloud-sdk.list
+          sudo apt-get install -y apt-transport-https ca-certificates gnupg
+          curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key --keyring /usr/share/keyrings/cloud.google.gpg add -
+          sudo apt-get update
+          sudo apt-get install -y google-cloud-sdk-gke-gcloud-auth-plugin
+          echo 'export USE_GKE_GCLOUD_AUTH_PLUGIN=True' >> $HOME/.bashrc
+          source $HOME/.bashrc
+
+>>>>>>> f936c8fe0921019f5c66a70834078462bab563fe
       - name: Build and push Docker image
         run: |
           docker buildx build --platform linux/amd64 --push -t gcr.io/${{ env.PROJECT_ID }}/gcc:${{ github.sha }} .
@@ -50,8 +63,14 @@ jobs:
         with:
           version: 'latest'
 
+<<<<<<< HEAD
       - name: Configure kubectl
         run: |
+=======
+      - name: Create .kube directory and configure kubectl
+        run: |
+          mkdir -p $HOME/.kube
+>>>>>>> f936c8fe0921019f5c66a70834078462bab563fe
           echo "${{ env.KUBE_CONFIG_DATA }}" | base64 --decode > $HOME/.kube/config
 
       - name: Create namespaces if not exist
@@ -62,6 +81,7 @@ jobs:
 
       - name: Apply Kubernetes deployment
         run: |
+<<<<<<< HEAD
           kubectl apply -f k8s/deployment.yml -n ${{ github.ref_name }}
 
       - name: Apply Ingress configuration
@@ -71,3 +91,14 @@ jobs:
       - name: Update Kubernetes deployment image
         run: |
           kubectl set image deployment/gcc gcc=gcr.io/${{ env.PROJECT_ID }}/gcc:${{ github.sha }} -n ${{ github.ref_name }}
+=======
+          kubectl apply -f k8/deployment.yaml -n ${{ github.ref_name }}
+
+      - name: Apply Kubernetes service
+        run: |
+          kubectl apply -f k8/service.yaml -n ${{ github.ref_name }}
+
+      - name: Apply Ingress configuration
+        run: |
+          kubectl apply -f k8/ingress.yaml  
+>>>>>>> f936c8fe0921019f5c66a70834078462bab563fe
