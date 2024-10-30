@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: nextjs-app
+  namespace: qa
 spec:
   replicas: 1
   selector:
@@ -18,5 +19,8 @@ spec:
         imagePullPolicy: Always
         ports:
         - containerPort: 3000
+        env:
+        - name: BASE_PATH
+          value: "/qa"
       imagePullSecrets:
       - name: gcr-secret
