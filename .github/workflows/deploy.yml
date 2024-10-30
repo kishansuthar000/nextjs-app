@@ -41,17 +41,29 @@ jobs:
       - name: Configure Docker
         run: gcloud auth configure-docker
 
+      - name: Add Google Cloud SDK repository and install gke-gcloud-auth-plugin
+        run: |
+          echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] http://packages.cloud.google.com/apt cloud-sdk main" | sudo tee -a /etc/apt/sources.list.d/google-cloud-sdk.list
+          sudo apt-get install -y apt-transport-https ca-certificates gnupg
+          curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key --keyring /usr/share/keyrings/cloud.google.gpg add -
+          sudo apt-get update
+          sudo apt-get install -y google-cloud-sdk-gke-gcloud-auth-plugin
+          echo 'export USE_GKE_GCLOUD_AUTH_PLUGIN=True' >> $HOME/.bashrc
+          source $HOME/.bashrc
+
       - name: Build and push Docker image
         run: |
-          docker buildx build --platform linux/amd64 --push -t gcr.io/${{ env.PROJECT_ID }}/gcc:${{ github.sha }} .
+          IMAGE_TAG=$(echo $GITHUB_SHA | cut -c1-7)
+          docker buildx build --platform linux/amd64 --push -t gcr.io/${{ env.PROJECT_ID }}/nextjs-app:$IMAGE_TAG .
 
       - name: Set up kubectl
         uses: azure/setup-kubectl@v1
         with:
           version: 'latest'
 
-      - name: Configure kubectl
+      - name: Create .kube directory and configure kubectl
         run: |
+          mkdir -p $HOME/.kube
           echo "${{ env.KUBE_CONFIG_DATA }}" | base64 --decode > $HOME/.kube/config
 
       - name: Create namespaces if not exist
@@ -62,12 +74,13 @@ jobs:
 
       - name: Apply Kubernetes deployment
         run: |
-          kubectl apply -f k8s/deployment.yml -n ${{ github.ref_name }}
+          IMAGE_TAG=$(echo $GITHUB_SHA | cut -c1-7)
+          kubectl set image deployment/nextjs-app nextjs-app=gcr.io/${{ env.PROJECT_ID }}/nextjs-app:$IMAGE_TAG -n ${{ github.ref_name }}
+
+      - name: Apply Kubernetes service
+        run: |
+          kubectl apply -f k8/service.yaml -n ${{ github.ref_name }}
 
       - name: Apply Ingress configuration
         run: |
-          kubectl apply -f k8s/ingress.yml
-
-      - name: Update Kubernetes deployment image
-        run: |
-          kubectl set image deployment/gcc gcc=gcr.io/${{ env.PROJECT_ID }}/gcc:${{ github.sha }} -n ${{ github.ref_name }}
+          kubectl apply -f k8/ingress.yaml
