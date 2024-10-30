@@ -81,8 +81,4 @@ jobs:
 
       - name: Apply Ingress configuration
         run: |
-          kubectl apply -f k8/ingress.yaml
-
-      - name: Update Kubernetes deployment image
-        run: |
-          kubectl set image deployment/nextjs-app nextjs-app=nextjs-app/${{ env.PROJECT_ID }}/nextjs-app:${{ github.sha }} -n ${{ github.ref_name }}
+          kubectl apply -f k8/ingress.yaml  
