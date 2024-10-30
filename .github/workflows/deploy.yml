@@ -70,15 +70,13 @@ jobs:
           kubectl create namespace dev || true
           kubectl create namespace uat || true
           kubectl create namespace qa || true
-
-      - name: Apply Kubernetes deployment
-        run: |
+    
+      - name: Delete Previous ingress
+        run: |       
+          kubectl delete ingress --all -n uat
+          kubectl delete all --all -n uat
           kubectl apply -f k8/deployment.yaml -n uat
-
-      - name: Apply Kubernetes service
-        run: |
           kubectl apply -f k8/service.yaml -n uat
-
-      - name: Apply Ingress configuration
-        run: |
           kubectl apply -f k8/ingress.yaml -n uat
+          kubectl rollout restart deployment ksa-fems -n uat 
+     
