@@ -19,8 +19,5 @@ spec:
         imagePullPolicy: Always
         ports:
         - containerPort: 3000
-        env:
-        - name: BASE_PATH
-          value: "/qa"
       imagePullSecrets:
       - name: gcr-secret
