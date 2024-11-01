@@ -11,7 +11,7 @@ spec:
   rules:
     - http:
         paths:
-          - path: /qa(/|$)(.*)
+          - path: /qa(/.*)?
             pathType: ImplementationSpecific
             backend:
               service:
