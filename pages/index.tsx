@@ -2,6 +2,7 @@ import Head from "next/head";
 
 
 export default function Home() {
+  console.log(process.env.BASE_PATH)
   return (
     <>
       <Head>
