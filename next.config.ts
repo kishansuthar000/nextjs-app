@@ -2,7 +2,7 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
-  basePath: process.env.BASE_PATH || '',
+  basePath: "/dev",
 };
 
 export default nextConfig;
