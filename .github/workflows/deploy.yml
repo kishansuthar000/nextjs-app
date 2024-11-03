@@ -10,7 +10,6 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      NEXT_PUBLIC_ENV: dev
       PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
       KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG }}
 
@@ -67,13 +66,14 @@ jobs:
       - name: Create namespaces if not exist
         run: |
           kubectl create namespace dev || true
-          kubectl create namespace uat || true
-          kubectl create namespace qa || true
     
       - name: Delete Previous ingress
         run: |       
           kubectl delete ingress --all -n dev
           kubectl delete all --all -n dev
+
+      - name: Apply configuration
+        run: |       
           kubectl apply -f k8/deployment.yaml -n dev
           kubectl apply -f k8/service.yaml -n dev
           kubectl apply -f k8/ingress.yaml -n dev
