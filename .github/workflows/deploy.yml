@@ -4,15 +4,13 @@ on:
   push:
     branches:
       - dev
-      - uat
-      - qa
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
 
     env:
-      NEXT_PUBLIC_ENV: ${{github.ref_name}}
+      NEXT_PUBLIC_ENV: dev
       PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
       KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG }}
 
