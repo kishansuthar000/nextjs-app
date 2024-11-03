@@ -12,6 +12,7 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
+      NEXT_PUBLIC_ENV: ${{github.ref_name}}
       PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
       KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG }}
 
