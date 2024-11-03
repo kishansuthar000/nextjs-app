@@ -3,9 +3,7 @@ name: nextjs-app deploy
 on:
   push:
     branches:
-      - dev
       - uat
-      - qa
 
 jobs:
   build-and-deploy:
